@@ -14,12 +14,16 @@ import axios from 'axios';
 const API_URL = '/api/v1/job';
 
 /**
- * Get all active (non-expired) jobs
+ * Get all active (non-expired) jobs with pagination
  * Public endpoint - no authentication required
- * @returns {Promise} - Response from server with jobs array
+ * @param {number} page - Page number (default 1)
+ * @param {number} limit - Number of jobs per page (default 10)
+ * @returns {Promise} - Response from server with jobs array + pagination info
  */
-export const getAllJobs = async () => {
-  const response = await axios.get(`${API_URL}/getall`);
+export const getAllJobs = async (page = 1, limit = 10) => {
+  const response = await axios.get(`${API_URL}/getall`, {
+    params: { page, limit },
+  });
   return response.data;
 };
 

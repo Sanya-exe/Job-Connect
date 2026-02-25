@@ -1,5 +1,6 @@
 import Application from "../models/application.js";
 import Job from "../models/job.js";
+import User from "../models/user.js";
 import cloudinary from "../config/cloudinary.js";
 import { sendEmail } from "../utils/sendEmail.js";
 
@@ -23,10 +24,14 @@ export const postApplication = async (req, res) => {
       });
     }
 
-    if (!req.file) {
+    // Get the applicant's profile to read their saved resume
+    const applicant = await User.findById(req.user._id);
+
+    // Check if the user has uploaded a resume to their profile
+    if (!applicant.resume || !applicant.resume.url) {
       return res.status(400).json({
         success: false,
-        message: "Resume file is required.",
+        message: "Please upload your resume to your profile before applying.",
       });
     }
 
@@ -38,21 +43,7 @@ export const postApplication = async (req, res) => {
       });
     }
 
-    const uploadedFile = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "raw", // for pdf/doc/docx
-          folder: "jobify_resumes",
-        },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        }
-      );
-
-      stream.end(req.file.buffer);
-    });
-
+    // Use the resume saved in the user's profile (no file upload needed here)
     const application = await Application.create({
       name,
       email,
@@ -63,8 +54,8 @@ export const postApplication = async (req, res) => {
       employerID: jobDetails.postedBy,
       jobId,
       resume: {
-        public_id: uploadedFile.public_id,
-        url: uploadedFile.secure_url,
+        public_id: applicant.resume.public_id,
+        url: applicant.resume.url,
       },
     });
 

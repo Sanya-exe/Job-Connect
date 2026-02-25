@@ -95,7 +95,7 @@ export default function DashboardLayout({ children }) {
             {/* Collapse button (only visible on desktop) */}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:flex p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+              className="hidden lg:flex p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition cursor-pointer"
             >
               <CollapseIcon className="w-5 h-5" />
             </button>
@@ -114,7 +114,7 @@ export default function DashboardLayout({ children }) {
                   onClick={() => setSidebarOpen(false)} // Close mobile sidebar on click
                   title={collapsed ? item.name : ''} // Show tooltip when collapsed
                   className={`
-                    flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition
+                    flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition cursor-pointer
                     ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100'}
                     ${collapsed ? 'lg:justify-center lg:px-2' : ''}
                   `}
@@ -150,7 +150,7 @@ export default function DashboardLayout({ children }) {
               title={collapsed ? 'Logout' : ''}
               className={`
                 w-full flex items-center justify-center gap-2 px-4 py-2
-                text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition
+                text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition cursor-pointer
                 ${collapsed ? 'lg:px-2' : ''}
               `}
             >
@@ -170,7 +170,7 @@ export default function DashboardLayout({ children }) {
             {/* Mobile menu button */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer"
             >
               <MenuIcon className="w-6 h-6" />
             </button>

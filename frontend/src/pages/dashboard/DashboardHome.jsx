@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getMyJobs, getAllJobs } from '../../api/jobs';
+import { getMyApplications } from '../../api/applications';
 
 export default function DashboardHome() {
   // Get current user from auth context
@@ -117,7 +118,7 @@ function EmployerDashboard() {
           <h2 className="text-lg font-semibold text-gray-900">Recent Job Postings</h2>
           <button
             onClick={() => navigate('/dashboard/my-jobs')}
-            className="text-sm text-blue-600 hover:text-blue-700"
+            className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer"
           >
             View all
           </button>
@@ -157,21 +158,24 @@ function EmployerDashboard() {
  */
 function JobSeekerDashboard({ user }) {
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   // Jobs state
   const [recentJobs, setRecentJobs] = useState([]);
   const [totalJobs, setTotalJobs] = useState(0);
+  const [applicationCount, setApplicationCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchJobs();
+    // Fetch jobs and applications at the same time
+    Promise.all([fetchJobs(), fetchApplicationCount()]);
   }, []);
 
   const fetchJobs = async () => {
     try {
       const data = await getAllJobs();
       const jobs = data.jobs || [];
-      setTotalJobs(jobs.length);
+      setTotalJobs(data.totalJobs || jobs.length);
       setRecentJobs(jobs.slice(0, 3));
     } catch {
       // Silent fail
@@ -180,11 +184,20 @@ function JobSeekerDashboard({ user }) {
     }
   };
 
+  const fetchApplicationCount = async () => {
+    try {
+      const data = await getMyApplications(token);
+      setApplicationCount(data.applications?.length || 0);
+    } catch {
+      // Silent fail — keep 0
+    }
+  };
+
   // Stats cards data
   const stats = [
-    { label: 'Applications Sent', value: '—', bg: 'bg-blue-50', text: 'text-blue-700' },
+    { label: 'Applications Sent', value: loading ? '—' : applicationCount, bg: 'bg-blue-50', text: 'text-blue-700' },
     { label: 'Available Jobs', value: loading ? '—' : totalJobs, bg: 'bg-green-50', text: 'text-green-700' },
-    { label: 'Saved Jobs', value: '—', bg: 'bg-purple-50', text: 'text-purple-700' },
+    { label: 'Saved Jobs', value: 0, bg: 'bg-purple-50', text: 'text-purple-700' },
   ];
 
   return (
@@ -239,7 +252,7 @@ function JobSeekerDashboard({ user }) {
           <h2 className="text-lg font-semibold text-gray-900">Latest Job Postings</h2>
           <button
             onClick={() => navigate('/dashboard/jobs')}
-            className="text-sm text-blue-600 hover:text-blue-700"
+            className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer"
           >
             View all
           </button>
@@ -283,7 +296,7 @@ function QuickAction({ title, description, href }) {
   return (
     <a
       href={href}
-      className="block p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/50 transition"
+      className="block p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/50 transition cursor-pointer"
     >
       <h3 className="font-medium text-gray-900">{title}</h3>
       <p className="text-sm text-gray-500 mt-1">{description}</p>

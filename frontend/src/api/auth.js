@@ -55,3 +55,40 @@ export const getCurrentUser = async (token) => {
   });
   return response.data;
 };
+
+/**
+ * Update user profile (name, email, phone, skillset)
+ * @param {string} id - User ID
+ * @param {Object} updates - Fields to update
+ * @param {string} token - JWT token for authentication
+ * @returns {Promise} - Response with updated user data
+ */
+export const updateUserProfile = async (id, updates, token) => {
+  const response = await axios.patch(`${API_URL}/update/${id}`, updates, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+/**
+ * Upload a resume file to the user's profile
+ * The same resume will be used automatically when applying for jobs
+ * @param {File} resumeFile - The PDF/DOC/DOCX file to upload
+ * @param {string} token - JWT token for authentication
+ * @returns {Promise} - Response with updated user data (including resume url)
+ */
+export const uploadProfileResume = async (resumeFile, token) => {
+  // FormData is used to send a file in an HTTP request
+  const formData = new FormData();
+  formData.append('resume', resumeFile);
+
+  const response = await axios.post(`${API_URL}/upload-resume`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      // Do NOT set Content-Type manually here.
+      // When using FormData, axios sets it automatically with the correct boundary.
+      // Setting it manually breaks the multipart parsing on the server.
+    },
+  });
+  return response.data;
+};

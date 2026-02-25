@@ -185,7 +185,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition"
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
@@ -195,7 +195,7 @@ export default function Login() {
             <div className="mt-8 pt-6 border-t border-gray-200">
               <p className="text-center text-gray-600">
                 New to JobConnect?{' '}
-                <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+                <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold cursor-pointer">
                   Create an account
                 </Link>
               </p>

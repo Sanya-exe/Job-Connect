@@ -188,7 +188,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setSelectedRole('Job Seeker')}
-                  className={`p-4 border-2 rounded-xl text-center transition ${
+                  className={`p-4 border-2 rounded-xl text-center transition cursor-pointer ${
                     selectedRole === 'Job Seeker'
                       ? 'border-blue-600 bg-blue-50 text-blue-700' // Selected state
                       : 'border-gray-200 hover:border-gray-300 text-gray-600' // Default state
@@ -208,7 +208,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setSelectedRole('Employer')}
-                  className={`p-4 border-2 rounded-xl text-center transition ${
+                  className={`p-4 border-2 rounded-xl text-center transition cursor-pointer ${
                     selectedRole === 'Employer'
                       ? 'border-blue-600 bg-blue-50 text-blue-700' // Selected state
                       : 'border-gray-200 hover:border-gray-300 text-gray-600' // Default state
@@ -331,7 +331,7 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={loading || !selectedRole}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition mt-2"
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition mt-2"
               >
                 {loading ? 'Creating account...' : 'Create Account'}
               </button>
@@ -341,7 +341,7 @@ export default function Register() {
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-center text-gray-600">
                 Already have an account?{' '}
-                <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+                <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold cursor-pointer">
                   Sign in
                 </Link>
               </p>

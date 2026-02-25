@@ -36,6 +36,12 @@ const userSchema = new mongoose.Schema({
     type: [String], // Array of skills, e.g., ['JavaScript', 'Node.js']
     default: [],
   },
+  // Resume saved on the profile (Job Seekers only)
+  // When applying for a job this resume is used automatically
+  resume: {
+    public_id: { type: String, default: '' },
+    url: { type: String, default: '' },
+  },
   createdAt: {
     type: Date,
     default: Date.now,

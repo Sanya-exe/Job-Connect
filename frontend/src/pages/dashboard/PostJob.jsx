@@ -407,7 +407,7 @@ export default function PostJob() {
                   <button
                     type="button"
                     onClick={addSkill}
-                    className="px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition"
+                    className="px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition cursor-pointer"
                   >
                     Add
                   </button>
@@ -424,7 +424,7 @@ export default function PostJob() {
                         <button
                           type="button"
                           onClick={() => removeSkill(skill)}
-                          className="hover:text-blue-900"
+                          className="hover:text-blue-900 cursor-pointer"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -465,14 +465,14 @@ export default function PostJob() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? 'Posting...' : 'Post Job'}
             </button>
             <button
               type="button"
               onClick={() => navigate('/dashboard/my-jobs')}
-              className="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition"
+              className="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition cursor-pointer"
             >
               Cancel
             </button>

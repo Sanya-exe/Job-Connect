@@ -2,6 +2,7 @@ import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import promisify from 'util';
+import cloudinary from '../config/cloudinary.js';
 
 
 // Function to sign a JWT token
@@ -139,6 +140,63 @@ export const logout = async (req, res, next) => {
       status: 'success',
       message: 'Logged Out Successfully.',
     });
+};
+
+// Upload or re-upload resume to the user's profile
+export const uploadProfileResume = async (req, res) => {
+  try {
+    // Check if a file was sent
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please select a resume file to upload.',
+      });
+    }
+
+    // If user already has a resume saved, delete the old one from Cloudinary first
+    if (req.user.resume && req.user.resume.public_id) {
+      await cloudinary.uploader.destroy(req.user.resume.public_id, {
+        resource_type: 'raw',
+      });
+    }
+
+    // Upload the new resume file to Cloudinary
+    const uploadedFile = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: 'raw', folder: 'jobify_profile_resumes' },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    // Save the new resume info to the user's profile in database
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        resume: {
+          public_id: uploadedFile.public_id,
+          url: uploadedFile.secure_url,
+        },
+      },
+      { new: true } // return the updated user
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Resume uploaded successfully.',
+      user: updatedUser,
+    });
+
+  } catch (error) {
+    console.error('Resume upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to upload resume. Please try again.',
+    });
+  }
 };
 
 export const updateUser = async (req, res) => {

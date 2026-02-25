@@ -215,7 +215,7 @@ export default function MyJobs() {
         </div>
         <button
           onClick={() => navigate('/dashboard/post-job')}
-          className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+          className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition cursor-pointer"
         >
           + Post New Job
         </button>
@@ -225,7 +225,7 @@ export default function MyJobs() {
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
           {error}
-          <button onClick={() => setError('')} className="ml-4 underline">Dismiss</button>
+          <button onClick={() => setError('')} className="ml-4 underline cursor-pointer">Dismiss</button>
         </div>
       )}
 
@@ -233,7 +233,7 @@ export default function MyJobs() {
       <div className="flex gap-2 mb-6 border-b border-gray-200">
         <button
           onClick={() => setActiveTab('active')}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition ${
+          className={`px-4 py-3 text-sm font-medium border-b-2 transition cursor-pointer ${
             activeTab === 'active'
               ? 'border-blue-600 text-blue-600'
               : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -243,7 +243,7 @@ export default function MyJobs() {
         </button>
         <button
           onClick={() => setActiveTab('expired')}
-          className={`px-4 py-3 text-sm font-medium border-b-2 transition ${
+          className={`px-4 py-3 text-sm font-medium border-b-2 transition cursor-pointer ${
             activeTab === 'expired'
               ? 'border-blue-600 text-blue-600'
               : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -324,7 +324,7 @@ export default function MyJobs() {
                 {/* Edit button */}
                 <button
                   onClick={() => openEditModal(job)}
-                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition cursor-pointer"
                   title="Edit job"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -334,7 +334,7 @@ export default function MyJobs() {
                 {/* Delete button */}
                 <button
                   onClick={() => setDeletingJobId(job._id)}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
                   title="Delete job"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -363,7 +363,7 @@ export default function MyJobs() {
             {activeTab === 'active' && (
               <button
                 onClick={() => navigate('/dashboard/post-job')}
-                className="inline-block px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+                className="inline-block px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition cursor-pointer"
               >
                 Post a Job
               </button>
@@ -383,13 +383,13 @@ export default function MyJobs() {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeletingJobId(null)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition"
+                className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDelete(deletingJobId)}
-                className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition"
+                className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition cursor-pointer"
               >
                 Delete
               </button>
@@ -406,7 +406,7 @@ export default function MyJobs() {
               <h3 className="text-lg font-semibold text-gray-900">Edit Job Posting</h3>
               <button
                 onClick={() => setEditingJob(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg transition"
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg transition cursor-pointer"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -604,7 +604,7 @@ export default function MyJobs() {
                   <button
                     type="button"
                     onClick={addSkillToEdit}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition cursor-pointer"
                   >
                     Add
                   </button>
@@ -620,7 +620,7 @@ export default function MyJobs() {
                         <button
                           type="button"
                           onClick={() => removeSkillFromEdit(skill)}
-                          className="hover:text-blue-900"
+                          className="hover:text-blue-900 cursor-pointer"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -655,14 +655,14 @@ export default function MyJobs() {
                 <button
                   type="button"
                   onClick={() => setEditingJob(null)}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition"
+                  className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={editLoading}
-                  className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition disabled:opacity-50 cursor-pointer"
                 >
                   {editLoading ? 'Saving...' : 'Save Changes'}
                 </button>
