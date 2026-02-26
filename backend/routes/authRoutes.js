@@ -2,6 +2,9 @@ import express from 'express';
 import { login, logout, register, updateUser, uploadProfileResume } from '../controllers/authController.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
 import { uploadResume } from '../middleware/uploadMiddleware.js';
+import { uploadProfileImage } from "../middleware/uploadImage.js";
+import { uploadProfileImageController } from "../controllers/authController.js";
+
 
 const router = express.Router();
 
@@ -11,6 +14,14 @@ router.get('/me', isAuthenticated, (req, res) => {
     user: req.user,
   });
 });
+
+
+router.post(
+  "/upload-profile-image",
+  isAuthenticated,
+  uploadProfileImage,
+  uploadProfileImageController
+);
 
 
 // Public routes

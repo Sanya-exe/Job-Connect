@@ -229,3 +229,57 @@ export const updateUser = async (req, res) => {
     });
   }
 };
+
+export const uploadProfileImageController = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload an image",
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    // Delete old image if exists
+    if (user.profileImage?.public_id) {
+      await cloudinary.uploader.destroy(user.profileImage.public_id);
+    }
+
+    // Upload new image
+    const result = await cloudinary.uploader.upload_stream(
+      {
+        folder: "jobify_profile_images",
+      },
+      async (error, uploadedImage) => {
+        if (error) {
+          return res.status(500).json({
+            success: false,
+            message: "Image upload failed",
+          });
+        }
+
+        user.profileImage = {
+          public_id: uploadedImage.public_id,
+          url: uploadedImage.secure_url,
+        };
+
+        await user.save();
+
+        return res.status(200).json({
+          success: true,
+          message: "Profile image uploaded successfully",
+          profileImage: user.profileImage,
+        });
+      }
+    );
+
+    result.end(req.file.buffer);
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
