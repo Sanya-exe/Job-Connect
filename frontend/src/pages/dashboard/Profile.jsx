@@ -8,11 +8,58 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { updateUserProfile, uploadProfileResume } from '../../api/auth';
+import { updateUserProfile, uploadProfileResume, uploadImage, deleteProfileImage } from '../../api/auth';
 
 export default function Profile() {
   const { user, token, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [showImageMenu, setShowImageMenu] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+const handleFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+   const formData = new FormData();
+  formData.append("profileImage", file);
+
+  try {
+    setImageUploading(true);
+
+    const data = await uploadImage(formData, token);
+
+    setUser((prev) => ({
+      ...prev,
+      profileImage: data.profileImage,
+    }));
+
+      setShowImageMenu(false);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setImageUploading(false);
+    e.target.value = ""; // reset file input
+  }
+};
+        const handleDeleteImage = async () => {
+  try {
+    setImageUploading(true);
+
+    await deleteProfileImage(token);
+
+    setUser((prev) => ({
+      ...prev,
+      profileImage: null,
+    }));
+
+    setShowImageMenu(false);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setImageUploading(false);
+  }
+};
 
   // Controlled form state - synced from user context
   const [formData, setFormData] = useState({
@@ -48,6 +95,8 @@ export default function Profile() {
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  
 
   const handleAddSkill = (e) => {
     if (e.key === 'Enter') {
@@ -188,11 +237,65 @@ export default function Profile() {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="text-center">
-              <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl font-bold text-blue-700">
-                  {user?.name?.charAt(0).toUpperCase()}
-                </span>
+              <div className="relative w-24 h-24 mx-auto mb-4">
+               {user?.profileImage?.url ? (
+                  <img
+                 src={user.profileImage.url}
+                 alt="Profile"
+                 className="w-24 h-24 rounded-full object-cover cursor-pointer"
+                onClick={() => setShowImageMenu(!showImageMenu)}
+                 />
+                ) : (
+              <div
+                onClick={() => setShowImageMenu(!showImageMenu)}
+                className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center cursor-pointer"
+              >
+               <span className="text-3xl font-bold text-blue-700">
+               {user?.name?.charAt(0).toUpperCase()}
+               </span>
               </div>
+                )}
+
+              {/* Dropdown Menu */}
+                {showImageMenu && (
+                     <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-white border border-gray-200 rounded-xl shadow-xl ring-1 ring-black/5 w-40 py-2 z-20">
+    
+                {/* Edit Photo */}
+                  <label className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition">
+                   Edit Photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  </label>
+
+                  {/* Divider */}
+                  <div className="h-px bg-gray-200 my-1"></div>
+
+                  {/* Delete */}
+                   {user?.profileImage?.url && (
+                  <button
+                    onClick={handleDeleteImage}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition cursor-pointer"
+                  >
+                  Delete Photo
+                </button>
+                )}
+              </div>
+              )}
+                </div>
+
+                     {/* Upload button */}
+                    {selectedImage && (
+                    <button
+                      onClick={handleUpload}
+                         className="mt-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
+                      >
+                        Save Image
+                        </button>
+                   )}
               <h2 className="text-xl font-semibold text-gray-900">{user?.name}</h2>
               <p className="text-gray-500">{user?.role}</p>
               <div className="mt-4 pt-4 border-t border-gray-200 space-y-1">

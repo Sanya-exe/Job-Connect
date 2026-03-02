@@ -283,3 +283,32 @@ export const uploadProfileImageController = async (req, res) => {
     });
   }
 };
+
+export const deleteProfileImage = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user.profileImage?.public_id) {
+      return res.status(400).json({
+        success: false,
+        message: "No profile image to delete",
+      });
+    }
+
+    // Delete from Cloudinary
+    await cloudinary.uploader.destroy(user.profileImage.public_id);
+
+    user.profileImage = null;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile image deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

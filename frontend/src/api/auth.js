@@ -70,6 +70,34 @@ export const updateUserProfile = async (id, updates, token) => {
   return response.data;
 };
 
+export const uploadImage = async (formData, token) => {
+  const res = await axios.post(
+    "http://localhost:3000/api/v1/user/upload-profile-image",
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return res.data;
+};
+
+export const deleteProfileImage = async (token) => {
+  const res = await axios.delete(
+    "http://localhost:5000/api/v1/user/delete-profile-image",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
 /**
  * Upload a resume file to the user's profile
  * The same resume will be used automatically when applying for jobs
