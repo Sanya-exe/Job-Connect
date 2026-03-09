@@ -1,5 +1,105 @@
 import Job from '../models/job.js';
 
+// Save or unsave a job (toggle)
+export const toggleSaveJob = async (req, res) => {
+  try {
+    if (req.user.role !== "Job Seeker") {
+      return res.status(403).json({
+        success: false,
+        message: "Only Job Seekers can save jobs.",
+      });
+    }
+
+    const { id: jobId } = req.params;
+    const userId = req.user._id;
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found.",
+      });
+    }
+
+    if (job.expired) {
+      return res.status(400).json({
+        success: false,
+        message: "Expired jobs cannot be saved.",
+      });
+    }
+
+    const alreadySaved = job.savedByUsers.some(
+      (entry) => String(entry.userId) === String(userId)
+    );
+
+    if (alreadySaved) {
+      job.savedByUsers = job.savedByUsers.filter(
+        (entry) => String(entry.userId) !== String(userId)
+      );
+      await job.save();
+
+      const savedJobsCount = await Job.countDocuments({
+        "savedByUsers.userId": userId,
+      });
+
+      return res.status(200).json({
+        success: true,
+        saved: false,
+        message: "Job removed from saved list.",
+      });
+    }
+
+    job.savedByUsers.push({ userId });
+    await job.save();
+
+    const savedJobsCount = await Job.countDocuments({
+    "savedByUsers.userId": userId,
+});
+    return res.status(200).json({
+      success: true,
+      saved: true,
+      savedJobsCount,
+      message: "Job saved successfully.",
+    });
+  }catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to save/unsave job.",
+    });
+  }
+};
+
+// Get all jobs saved by current job seeker
+export const getMySavedJobs = async (req, res) => {
+  try {
+    if (req.user.role !== "Job Seeker") {
+      return res.status(403).json({
+        success: false,
+        message: "Only Job Seekers can access saved jobs.",
+      });
+    }
+ 
+    const userId = req.user._id;
+    
+    const jobs = await Job.find({
+      //expired: false,
+      "savedByUsers.userId": req.user._id,
+    }).sort({ jobPostedOn: -1 });
+
+    return res.status(200).json({
+      success: true,
+      total: jobs.length,
+      jobs,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch saved jobs.",
+    });
+  }
+};
+
+
 // Post a new job and notify matched users
 export const postJob = async (req, res) => {
   try {
@@ -30,10 +130,9 @@ export const getAllJobs = async (req, res, next) => {
 
     const skip = (page - 1) * limit; 
 
-    const totalJobs = await Job.countDocuments();
-    console.log('Total Jobs:', totalJobs);
+    const totalJobs = await Job.countDocuments({ expired: false });
 
-    const jobs = await Job.find()
+    const jobs = await Job.find({ expired: false })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -146,6 +245,9 @@ export const deleteJob = async (req, res, next) => {
 // Get a single job by its ID
 export const getSingleJob = async (req, res, next) => {
   try{
+  // const isSavedByCurrentUser = job.savedByUsers.some(
+  // (entry) => String(entry.userId) === String(req.user._id)
+  //  );
   const { id } = req.params;
   const job = await Job.findById(id);
 
@@ -155,10 +257,16 @@ export const getSingleJob = async (req, res, next) => {
     message: 'Job not found.',
   });
   }
+  const isSavedByCurrentUser =
+  req.user?.role === 'Job Seeker' &&
+  job.savedByUsers.some(
+    (entry) => String(entry.userId) === String(req.user._id)
+  );
 
   res.status(200).json({
     success: true,
     job,
+    isSavedByCurrentUser,
   });
 } catch (error) {
     res.status(500).json({

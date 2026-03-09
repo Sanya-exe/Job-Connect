@@ -1,6 +1,6 @@
 import express from 'express';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
-import { postJob, getAllJobs, getMyJobs, updateJob, deleteJob, getSingleJob } from '../controllers/jobController.js';
+import { postJob, getAllJobs, getMyJobs, updateJob, deleteJob, getSingleJob,toggleSaveJob, getMySavedJobs } from '../controllers/jobController.js';
 
 const router = express.Router();
 
@@ -9,6 +9,8 @@ router.patch("/update/:id", isAuthenticated, updateJob);
 router.delete("/delete/:id", isAuthenticated, deleteJob);
 router.get("/getmyjobs", isAuthenticated, getMyJobs);
 router.get('/getall', getAllJobs);
+router.patch("/save/:id", isAuthenticated, toggleSaveJob);
+router.get("/saved/me", isAuthenticated, getMySavedJobs);
 router.get("/:id", isAuthenticated, getSingleJob);
 
 

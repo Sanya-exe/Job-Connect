@@ -11,6 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getJobById } from '../../api/jobs';
 import { postApplication } from '../../api/applications';
+import { toggleSaveJob } from '../../api/jobs';
 
 export default function JobDetails() {
   const { id } = useParams();
@@ -20,11 +21,13 @@ export default function JobDetails() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   // Apply modal state
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [savingJob, setSavingJob] = useState(false);
 
   useEffect(() => {
+    setIsSaved(false);
     fetchJobDetails();
   }, [id]);
 
@@ -33,6 +36,7 @@ export default function JobDetails() {
       setLoading(true);
       const data = await getJobById(id, token);
       setJob(data.job);
+      setIsSaved(Boolean(data.isSavedByCurrentUser));
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load job details.');
     } finally {
@@ -62,6 +66,19 @@ export default function JobDetails() {
     const daysLeft = Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24));
     return daysLeft > 0 ? daysLeft : 0;
   };
+
+  const handleToggleSave = async () => {
+  try {
+    setSavingJob(true);
+    const data = await toggleSaveJob(job._id, token);
+    setIsSaved(data.saved);
+  } catch (err) {
+    setError(err.response?.data?.message || "Failed to save job.");
+  } finally {
+    setSavingJob(false);
+  }
+};
+
 
   if (loading) {
     return (
@@ -184,12 +201,26 @@ export default function JobDetails() {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Interested in this job?</h3>
             {user?.role === 'Job Seeker' && !job.expired ? (
+              <>
               <button
                 onClick={() => setShowApplyModal(true)}
                 className="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition cursor-pointer"
               >
                 Apply Now
               </button>
+                
+              <button
+             onClick={handleToggleSave}
+             disabled={savingJob}
+             className="w-full mt-3 px-4 py-3 border border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition disabled:opacity-60 cursor-pointer"
+          >
+            {savingJob
+            ? "Please wait..."
+            : isSaved
+            ? "Saved (Click to Unsave)"
+            : "Save Job"}
+          </button>
+            </>
             ) : job.expired ? (
               <p className="text-gray-500 text-center text-sm">This job posting has expired</p>
             ) : (
@@ -231,6 +262,8 @@ export default function JobDetails() {
     </div>
   );
 }
+   
+
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 

@@ -96,3 +96,19 @@ export const deleteJob = async (id, token) => {
   });
   return response.data;
 };
+
+export const toggleSaveJob = async (id, token) => {
+  const response = await axios.patch(
+    `${API_URL}/save/${id}`,
+    {},
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return response.data;
+};
+
+export const getMySavedJobs = async (token) => {
+  const response = await axios.get(`${API_URL}/saved/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};

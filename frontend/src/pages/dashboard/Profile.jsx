@@ -9,6 +9,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { updateUserProfile, uploadProfileResume, uploadImage, deleteProfileImage } from '../../api/auth';
+import { getMySavedJobs } from '../../api/jobs';
+import { Link } from 'react-router-dom';
 
 export default function Profile() {
   const { user, token, setUser } = useAuth();
@@ -16,15 +18,20 @@ export default function Profile() {
   const [showImageMenu, setShowImageMenu] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [savedJobsLoading, setSavedJobsLoading] = useState(false);
+  const [savedJobsError, setSavedJobsError] = useState('');
+  const [showSavedJobs, setShowSavedJobs] = useState(false);
 
-const handleFileChange = async (e) => {
+
+  const handleFileChange = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
    const formData = new FormData();
-  formData.append("profileImage", file);
+   formData.append("profileImage", file);
 
-  try {
+   try {
     setImageUploading(true);
 
     const data = await uploadImage(formData, token);
@@ -92,6 +99,12 @@ const handleFileChange = async (e) => {
     }
   }, [user]);
 
+  useEffect(() => {
+  if (user?.role === "Job Seeker") {
+    fetchSavedJobs();
+  }
+}, [user]);
+
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -134,6 +147,7 @@ const handleFileChange = async (e) => {
     const updates = { ...formData };
     if (user?.role === 'Job Seeker') {
       updates.skillset = skills;
+       fetchSavedJobs();
     }
 
     try {
@@ -180,6 +194,20 @@ const handleFileChange = async (e) => {
       e.target.value = '';
     }
   };
+
+    const fetchSavedJobs = async () => {
+    try {
+      setSavedJobsLoading(true);
+      setSavedJobsError('');
+      const data = await getMySavedJobs(token);
+      setSavedJobs(data.jobs || []);
+  } catch (err) {
+      setSavedJobsError(err.response?.data?.message || 'Failed to load saved jobs.');
+  } finally {
+    setSavedJobsLoading(false);
+  }
+};
+
 
   return (
     <div>
@@ -471,6 +499,7 @@ const handleFileChange = async (e) => {
                         <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
                         <p className="text-sm text-gray-600">Uploading resume...</p>
                       </div>
+                      
                     ) : (
                       <div className="text-center">
                         <svg className="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -488,6 +517,62 @@ const handleFileChange = async (e) => {
                       className="hidden"
                     />
                   </label>
+                </div>
+              )}
+            </div>
+          )}
+            {/* Saved Jobs Section */}
+             {user?.role === 'Job Seeker' && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Saved Jobs</h3>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-500">
+                  {savedJobs.length} saved
+                  </span>
+
+                 <button
+                  onClick={() => {
+                 if (!showSavedJobs) fetchSavedJobs();
+                 setShowSavedJobs(!showSavedJobs);
+               }}
+                className="text-sm text-blue-600 hover:underline cursor-pointer"
+              >
+               {showSavedJobs ? "Hide Saved Jobs" : "View Saved Jobs"}
+             </button>
+            </div>
+          </div>
+
+              {savedJobsLoading && (
+                <p className="text-sm text-gray-500">Loading saved jobs...</p>
+              )}
+
+              {savedJobsError && (
+                <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                  {savedJobsError}
+                </div>
+              )}
+
+                   {showSavedJobs && !savedJobsLoading && !savedJobsError && savedJobs.length === 0 && (
+                     <p className="text-sm text-gray-500">You have not saved any jobs yet.</p>
+                    )}
+              {showSavedJobs && !savedJobsLoading && !savedJobsError && savedJobs.length > 0 && (
+                  <div className="space-y-3">
+                  {savedJobs.map((job) => (
+                    <div key={job._id} 
+                    className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition">
+                      <p className="font-medium text-gray-900">{job.title}</p>
+                      <p className="text-sm text-gray-600">
+                        {job.company} • {job.city}, {job.country}
+                      </p>
+                      <Link
+                        to={`/dashboard/job/${job._id}`}
+                        className="inline-block mt-2 text-sm text-blue-600 hover:underline"
+                      >
+                        View Job
+                      </Link>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
