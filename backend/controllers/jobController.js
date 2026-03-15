@@ -1,4 +1,29 @@
 import Job from '../models/job.js';
+import { applyFilters } from "../utils/searchFilters.js";
+
+// search jobs with various filters and pagination
+export const searchJobs = async (req, res) => {
+  try {
+    let query = Job.find();
+
+    // Apply filters from query params
+    query = await applyFilters(query, req.query);
+
+    const jobs = await query;
+
+    res.status(200).json({
+      success: true,
+      totalJobs: jobs.length,
+      jobs,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to search jobs.",
+    });
+  }
+};
 
 // Save or unsave a job (toggle)
 export const toggleSaveJob = async (req, res) => {

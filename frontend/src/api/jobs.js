@@ -20,6 +20,15 @@ const API_URL = '/api/v1/job';
  * @param {number} limit - Number of jobs per page (default 10)
  * @returns {Promise} - Response from server with jobs array + pagination info
  */
+
+export const searchJobs = async (filters) => {
+  const response = await axios.get(`${API_URL}/search`, {
+    params: filters,
+  });
+
+  return response.data;
+};
+
 export const getAllJobs = async (page = 1, limit = 10) => {
   const response = await axios.get(`${API_URL}/getall`, {
     params: { page, limit },

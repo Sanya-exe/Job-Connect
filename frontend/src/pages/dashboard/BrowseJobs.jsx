@@ -9,12 +9,17 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllJobs } from '../../api/jobs';
+import { getAllJobs, searchJobs } from '../../api/jobs';
 
 export default function BrowseJobs() {
   const navigate = useNavigate();
 
   // ---- DATA STATES ----
+  const [filters, setFilters] = useState({
+  title: "",
+  category: "",
+  experienceLevel: ""
+  });
   const [jobs, setJobs] = useState([]);           // jobs on the current page
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -41,6 +46,16 @@ export default function BrowseJobs() {
   useEffect(() => {
     fetchJobs(currentPage);
   }, [currentPage]);
+
+  useEffect(() => {
+  if (
+    filters.title ||
+    filters.category ||
+    filters.experienceLevel
+  ) {
+    handleSearch();
+  }
+}, [filters]);
 
   const fetchJobs = async (page) => {
     try {
@@ -70,6 +85,24 @@ export default function BrowseJobs() {
     setSelectedCategory('');
     setSelectedExperience('');
   };
+
+
+ const handleSearch = async () => {
+  try {
+    setLoading(true);
+
+    const data = await searchJobs(filters);
+
+    setJobs(data.jobs || []);
+    setTotalJobs(data.totalJobs || data.jobs.length);
+
+  } catch (error) {
+    console.error(error);
+    setError("Failed to search jobs.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // ---- PAGINATION HANDLERS ----
   const goToPrevPage = () => {
@@ -142,19 +175,28 @@ export default function BrowseJobs() {
         {/* Search Bar */}
         <div className="flex-1">
           <input
-            type="text"
-            placeholder="Search jobs by title, company, or location..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              type="text"
+              placeholder="Search jobs by title..."
+              value={filters.title}
+              onChange={(e) =>
+              setFilters({ ...filters, title: e.target.value })
+              }
+                onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                handleSearch();
+              }
+              }}
+              className="w-full border rounded-lg px-4 py-2"
           />
         </div>
 
         {/* Filter Dropdowns */}
         <div className="flex flex-wrap gap-4 mt-4">
           <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            value={filters.category}
+            onChange={(e) =>
+            setFilters({ ...filters, category: e.target.value })
+            }
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Categories</option>
@@ -164,8 +206,10 @@ export default function BrowseJobs() {
           </select>
 
           <select
-            value={selectedExperience}
-            onChange={(e) => setSelectedExperience(e.target.value)}
+            value={filters.experienceLevel}
+            onChange={(e) =>
+            setFilters({ ...filters, experienceLevel: e.target.value })
+            }
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Experience Levels</option>
