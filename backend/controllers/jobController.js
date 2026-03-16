@@ -1,5 +1,6 @@
 import Job from '../models/job.js';
 import { applyFilters } from "../utils/searchFilters.js";
+import { summarizeJob } from '../utils/geminiService.js';
 
 // search jobs with various filters and pagination
 export const searchJobs = async (req, res) => {
@@ -297,6 +298,34 @@ export const getSingleJob = async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve job.',
+    });
+  }
+};
+
+export const summarizeJobDescription = async (req, res) => {
+  try{
+    const{id} = req.params;
+
+    const job = await Job.findById(id);
+
+    if(!job){
+      return res.status(404).json({
+        success : false,
+        message: "Job not found"
+      });
+    }
+    const summary = await summarizeJob(job);
+
+    res.status(200).json({
+      success : true,
+      summary,
+    });
+  }catch(error){
+    console.log("AI Summary Error:", error);
+
+    res.status(500).json({
+      success : false,
+      message: " Failed to generate job summary",
     });
   }
 };

@@ -1,6 +1,6 @@
 import express from 'express';
 import { isAuthenticated } from '../middleware/authMiddleware.js';
-import { postJob, getAllJobs, getMyJobs, searchJobs, updateJob, deleteJob, getSingleJob,toggleSaveJob, getMySavedJobs } from '../controllers/jobController.js';
+import { postJob, getAllJobs, getMyJobs, searchJobs, updateJob, deleteJob, getSingleJob,toggleSaveJob, getMySavedJobs, summarizeJobDescription } from '../controllers/jobController.js';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get('/getall', getAllJobs);
 router.patch("/save/:id", isAuthenticated, toggleSaveJob);
 router.get("/saved/me", isAuthenticated, getMySavedJobs);
 router.get("/:id", isAuthenticated, getSingleJob);
-
+router.get("/summarize/:id", summarizeJobDescription);
 
 
 export default router;
