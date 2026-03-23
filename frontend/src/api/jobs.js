@@ -121,3 +121,9 @@ export const getMySavedJobs = async (token) => {
   });
   return response.data;
 };
+
+export const summarizeJobAI = async (id) => {
+  const response = await axios.get(`/api/v1/job/summarize/${id}`);
+  return response.data;
+  // returns: { success: true, summary: "Key Responsibilities:\n• ..." }
+};

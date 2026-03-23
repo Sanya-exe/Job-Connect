@@ -9,28 +9,42 @@ export const summarizeJob = async (job) => {
   });
 
   const prompt = `
-Summarize the following job in simple bullet points.
+You MUST summarize the job below.
 
-Title: ${job.title}
-Company: ${job.company}
-Category: ${job.category}
-Location: ${job.city}, ${job.country}
-Experience: ${job.experienceLevel}
+If job details are missing or empty, reply ONLY with:
+"No job data provided"
 
-Skills Required:
-${job.skillsRequired?.join(", ")}
+Do NOT ask for input.
+Do NOT give examples.
+Do NOT explain anything.
 
-Job Description:
-${job.description}
+Keep output short (max 3 points each).
 
-Return:
-• key responsibilities
-• important skills
-• experience needed
+Format:
+
+Key Responsibilities:
+• ...
+• ...
+
+Important Skills:
+• ...
+• ...
+
+Experience Needed:
+• ...
+
+Job details:
+Title: ${job?.title || "Not provided"}
+Company: ${job?.company || "Not provided"}
+Location: ${job?.city || ""}, ${job?.country || ""}
+Experience Level: ${job?.experienceLevel || "Not provided"}
+Skills: ${job?.skillsRequired?.join(", ") || "Not specified"}
+
+Description:
+${job?.description || "Not provided"}
 `;
-
   const result = await model.generateContent(prompt);
-  console.log(result);
+ 
 
   const response = await result.response;
 

@@ -12,6 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import { getJobById } from '../../api/jobs';
 import { postApplication } from '../../api/applications';
 import { toggleSaveJob } from '../../api/jobs';
+import { summarizeJobAI } from '../../api/jobs';
 
 export default function JobDetails() {
   const { id } = useParams();
@@ -26,8 +27,20 @@ export default function JobDetails() {
   const [isSaved, setIsSaved] = useState(false);
   const [savingJob, setSavingJob] = useState(false);
 
+  const [summary, setSummary] = useState(null);
+// Stores the summary text returned by Gemini.
+// null = not fetched yet, string = summary is ready
+
+const [summaryLoading, setSummaryLoading] = useState(false);
+// true while waiting for the API response (shows spinner)
+
+const [summaryError, setSummaryError] = useState('');
+// Stores any error message if the request fails
+
   useEffect(() => {
     setIsSaved(false);
+    setSummary(null);      // clear old summary
+    setSummaryError('');   // clear old error
     fetchJobDetails();
   }, [id]);
 
@@ -76,6 +89,22 @@ export default function JobDetails() {
     setError(err.response?.data?.message || "Failed to save job.");
   } finally {
     setSavingJob(false);
+  }
+};
+
+const handleSummarize = async () => {
+  setSummaryLoading(true);   // show spinner
+  setSummaryError('');
+  setSummary(null);
+  try {
+    const data = await summarizeJobAI(id);  // call backend
+    setSummary(data.summary);               // save response
+  } catch (err) {
+    setSummaryError(
+      err.response?.data?.message || 'Could not generate summary. Please try again.'
+    );
+  } finally {
+    setSummaryLoading(false);  // hide spinner
   }
 };
 
@@ -179,6 +208,17 @@ export default function JobDetails() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Job Description</h2>
             <p className="text-gray-700 whitespace-pre-wrap">{job.description}</p>
           </div>
+
+          <AISummarySection
+            summary={summary}
+            loading={summaryLoading}
+            error={summaryError}
+            onSummarize={handleSummarize}
+            onClose={() => {
+              setSummary(null);
+              setSummaryError('');
+          }}
+        />
 
           {/* Skills Required */}
           {job.skillsRequired && job.skillsRequired.length > 0 && (
@@ -291,6 +331,28 @@ function DetailRow({ label, value }) {
     </div>
   );
 }
+
+function AISummarySection({ summary, loading, error, onSummarize, onClose }) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <h2 className="text-lg font-semibold mb-4">AI Summary</h2>
+
+      {!summary && !loading && (
+        <button
+          onClick={onSummarize}
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg"
+        >
+          Generate Summary
+        </button>
+      )}
+
+      {loading && <p>Generating...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+      {summary && <p className="text-gray-700 whitespace-pre-wrap">{summary}</p>}
+    </div>
+  );
+}
+
 
 /**
  * ApplyModal - Job application form
