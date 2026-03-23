@@ -3,7 +3,7 @@
 Jobify is a full-stack job portal built to connect job seekers with employers in a simple and efficient way.  
 It allows users to browse jobs, save them, apply easily, and even get AI-generated summaries of job descriptions.
 
-This project was built as part of my major project during B.Tech, with a focus on real-world functionality and clean UI.
+
 
 ---
 
