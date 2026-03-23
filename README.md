@@ -74,7 +74,6 @@ It allows users to browse jobs, save them, apply easily, and even get AI-generat
 ### 📧 Email Notifications
 - Email alerts for:
   - Jobs about to expire
-  - Relevant job updates
 
 ---
 
