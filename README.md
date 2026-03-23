@@ -54,7 +54,7 @@ It allows users to browse jobs, save them, apply easily, and even get AI-generat
 
 ---
 
-### 🤖 AI Job Summarizer (Gemini API)
+### 🤖 AI Job Summarizer
 - Generates a clean and short summary of job descriptions
 - Helps users quickly understand:
   - Responsibilities
@@ -95,7 +95,7 @@ It allows users to browse jobs, save them, apply easily, and even get AI-generat
 ### Other Tools
 - JWT (Authentication)
 - Node Cron (Scheduled jobs)
-- Gemini API (AI summaries)
+- AI Job  summariser
 - Nodemailer (Emails)
 
 ---
