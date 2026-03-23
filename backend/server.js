@@ -7,6 +7,11 @@ import { startJobExpiryReminderCron, runJobExpiryWorkflow } from "./cronjobs/job
 
 const PORT = process.env.PORT || 5000;
 
+app.use(cors({
+  origin: "https://job-connect-amber.vercel.app",
+  credentials: true
+}));
+
 const startServer = async () => {
   await connectDB();
 

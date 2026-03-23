@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/v1/application';
+const API_URL = 'https://job-connect-091s.onrender.com/api/v1/application';
 
 /**
  * Submit a job application

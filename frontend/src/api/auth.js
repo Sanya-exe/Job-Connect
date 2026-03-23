@@ -11,7 +11,7 @@
 import axios from 'axios';
 
 // Base URL for all auth-related API endpoints
-const API_URL = '/api/v1/user';
+const API_URL = 'https://job-connect-091s.onrender.com/api/v1/user';
 
 /**
  * Register a new user

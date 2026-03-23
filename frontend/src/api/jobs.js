@@ -11,7 +11,7 @@
 import axios from 'axios';
 
 // Base URL for all job-related API endpoints
-const API_URL = '/api/v1/job';
+const API_URL = 'https://job-connect-091s.onrender.com/api/v1/job';
 
 /**
  * Get all active (non-expired) jobs with pagination
