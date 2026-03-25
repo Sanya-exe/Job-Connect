@@ -123,7 +123,7 @@ export const getMySavedJobs = async (token) => {
 };
 
 export const summarizeJobAI = async (id) => {
-  const response = await axios.get(`/api/v1/job/summarize/${id}`);
+  const response = await axios.get(`https://job-connect-091s.onrender.com/api/v1/job/summarize/${id}`);
   return response.data;
   // returns: { success: true, summary: "Key Responsibilities:\n• ..." }
 };
